@@ -3,21 +3,30 @@
 const Rx = require('rx');
 const Immutable = require('immutable');
 
-const state$ = new Rx.Subject;
-
-const updateState = (() => {
-    // TODO Use Rx.ReplaySubject(1) instead?
-    let state;
-    state$.subscribe(newState => state = newState);
+class State {
+    constructor() {
+        this._state$ = new Rx.Subject;
+        
+        // TODO Use Rx.ReplaySubject(1) instead?
+        this._state$.subscribe(newState => this._state = newState);
+    }
     
-    return update => state$.onNext(update(state));
-})();
+    update(update) {
+        this._state$.onNext(update(this._state));
+    }
+    
+    get observable() {
+        return this._state$.asObservable();
+    }
+}
+
+const state = new State;
 
 // View
-state$.subscribe(state => console.log('>', state.get('result')));
+state.observable.subscribe(state => console.log('>', state.get('result')));
 
 // Initialization
-state$.onNext(Immutable.Map({result: 0}));
+state.update(() => Immutable.Map({result: 0}));
 
 const plus = amount => {
     return state => state.update('result', result => {
@@ -25,6 +34,6 @@ const plus = amount => {
     });
 };
 
-updateState(plus(1));
-updateState(plus(2));
-updateState(plus(3));
+state.update(plus(1));
+state.update(plus(2));
+state.update(plus(3));
