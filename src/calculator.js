@@ -1,18 +1,28 @@
+/*
+ *      initialState
+ *          |
+ *          v
+ *   +--> state --> view
+ *   |      |
+ *   +------+--<-- updates
+ */
+ 
 'use strict';
 
 const Rx = require('rx');
 const Immutable = require('immutable');
 
 class State {
-    constructor() {
-        this._state$ = new Rx.Subject;
-        
-        // TODO Use Rx.ReplaySubject(1) instead?
-        this._state$.subscribe(newState => this._state = newState);
+    constructor(initialState) {
+        this._state$ = new Rx.BehaviorSubject(initialState);
+        this._updates$ = new Rx.Subject;
+        this._updates$.
+            withLatestFrom(this._state$, (update, state) => update(state)).
+            subscribe(this._state$);
     }
     
     update(update) {
-        this._state$.onNext(update(this._state));
+        this._updates$.onNext(update);
     }
     
     get observable() {
@@ -20,13 +30,10 @@ class State {
     }
 }
 
-const state = new State;
+const state = new State(Immutable.Map({result: 0}));
 
 // View
 state.observable.subscribe(state => console.log('>', state.get('result')));
-
-// Initialization
-state.update(() => Immutable.Map({result: 0}));
 
 const plus = amount => {
     return state => state.update('result', result => {
