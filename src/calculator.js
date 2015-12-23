@@ -9,7 +9,7 @@
  
 'use strict';
 
-const Rx = require('rx');
+const Rx = require('rx-lite');
 const Immutable = require('immutable');
 
 class State {
