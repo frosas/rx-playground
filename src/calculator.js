@@ -36,9 +36,7 @@ const state = new State(Immutable.Map({result: 0}));
 state.observable.subscribe(state => console.log('>', state.get('result')));
 
 const plus = amount => {
-    return state => state.update('result', result => {
-        return result + amount;
-    });
+    return state => state.update('result', result => result + amount);
 };
 
 state.update(plus(1));
