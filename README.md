@@ -1,6 +1,5 @@
-## Rx Playground
+## Reactive Playground
 
 ```bash
 $ npm i
-$ node src/calculator.js
 ```
