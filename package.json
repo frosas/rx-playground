@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "immutable": "^3.7.6",
-    "rx-lite": "^4.0.7"
+    "rx": "^4.0.7",
+    "rx-node": "^1.0.1"
   }
 }
